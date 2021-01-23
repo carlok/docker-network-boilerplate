@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  api:
+    container_name: ck_kis_api
+    # network_mode: host
+    build: .
+    command: gunicorn --reload --bind=0.0.0.0:8000 api.__main__:__hug_wsgi__
+    # expose:
+    #   - "8000"
+    volumes:
+      - .:/app
+    working_dir: /app
+
+  nginx:
+    container_name: ck_kis_nginx
+    # network_mode: host
+    depends_on:
+      - api
+    image: nginx:latest
+    ports:
+      - "8010:80"
+    volumes:
+      - .:/app
+      - ./config/nginx:/etc/nginx/conf.d
+
+networks:
+  default:
+    name: kis_network
